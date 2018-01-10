@@ -15,10 +15,10 @@ import android.widget.TextView
 import android.widget.Toast
 
 class MainActivity : Activity() {
-    private var mPrefs: SharedPreferences? = null
-    private var mPhone: String? = null
-    private var mMsg: String? = null
-    private var mName: String? = null
+    private lateinit var mPrefs: SharedPreferences
+    private lateinit var mPhone: String
+    private lateinit var mMsg: String
+    private lateinit var mName: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,21 +59,6 @@ class MainActivity : Activity() {
         }
 
         Log.d(TAG, "message is " + msg!!)
-                // Intent i = new Intent(Intent.ACTION_SEND);
-        // i.setType("text/plain");
-        // i.putExtra(Intent.EXTRA_TEXT, msg);
-        // startActivity(i);
-        // try {
-        // startActivity(i);
-        // } catch (Exception ex) {
-        // Toast.makeText(this.getApplicationContext(), "Cannot send message",
-        // Toast.LENGTH_LONG).show();
-        // Log.e(TAG, "sendMessage startActivity error", ex);
-        // }
-        // Intent i = new Intent(Intent.ACTION_SEND);
-        // i.setType("text/plain");
-        // i.putExtra(Intent.EXTRA_TEXT, msg);
-        // startActivity(i);
 
         val i = Intent(Intent.ACTION_VIEW)
         i.data = Uri.fromParts("sms", mPhone, null)
@@ -89,43 +74,35 @@ class MainActivity : Activity() {
             startActivity(Intent.createChooser(i,
                     "Please choose your texting app"))
         }
-        // try {
-        // startActivity(i);
-        // } catch (Exception ex) {
-        // Toast.makeText(this.getApplicationContext(), "Cannot send message",
-        // Toast.LENGTH_LONG).show();
-        // Log.e(TAG, "sendMessage startActivity error", ex);
-        // }
     }
 
     private fun displayMainScreen() {
         setContentView(R.layout.activity_main)
         mPrefs = getSharedPreferences("settings", Context.MODE_PRIVATE)
-        mPhone = mPrefs!!.getString("phone_number", "")
-        mMsg = mPrefs!!.getString("message", "")
-        mName = mPrefs!!.getString("name", "")
+        mPhone = mPrefs.getString("phone_number", "")
+        mMsg = mPrefs.getString("message", "")
+        mName = mPrefs.getString("name", "Need Name!")
         Log.d(TAG, "xmName is :$mName:")
         Log.d(TAG, "xmPhone is :$mPhone:")
         Log.d(TAG, "xmMsg is :$mMsg:")
         val headerView = findViewById(R.id.header) as TextView
         val customView = findViewById(R.id.custom) as Button
-        if (mName != null) {
+        if (!mName.isBlank()) {
             headerView.text = (getString(R.string.quick_message_header)
                     + " for " + mName)
         }
 
-        if (mPhone == null || mPhone === "") {
+        if (mPhone.isBlank()) {
             Toast.makeText(
                     applicationContext,
                     "You haven't added the phone number you'd like to send to. Please press on the preferences button",
                     Toast.LENGTH_LONG).show()
         }
 
-        if (!mMsg.isNullOrEmpty()) {
+        if (!mMsg.isBlank()) {
             customView.text = mMsg
             customView.visibility = Button.VISIBLE
         }
-
     }
 
     companion object {
